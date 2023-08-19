@@ -1,0 +1,29 @@
+kind: pipeline
+type: docker
+name: "taiga-front:arm64"
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+
+
+- name: build and push taiga front
+  image: plugins/docker
+  settings:
+    dockerfile: ./docker/Dockerfile
+    context: ./
+    registry: registry.tranquang.net
+    username: quangtran
+    password:
+      from_secret: registry_passw
+    repo: registry.tranquang.net/quangtran/taiga-front
+    tags:
+    - latest
+    cache_from: registry.tranquang.net/quangtran/taiga-front:latest
+
+trigger:
+  branch:
+  - arm64
+
