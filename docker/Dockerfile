@@ -10,7 +10,8 @@ RUN npx gulp deploy
 FROM nginx:1.23-alpine
 LABEL maintainer="support@taiga.io"
 
-COPY --from=build /taiga/dist /taiga
+RUN mkdir -p /taiga/dist
+COPY --from=build /taiga/dist /taiga 
 
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/conf.json.template /
@@ -22,7 +23,7 @@ RUN set -eux; \
        subversion; \
     apk add \
        bash; \
-    mv docker/conf.json.template taiga/dist/; \
+    mv /conf.json.template /taiga/dist/; \
     chmod +x /docker-entrypoint.d/30_config_env_subst.sh; \
     # Install taiga-front contribs
     mkdir /taiga/dist/plugins; \
