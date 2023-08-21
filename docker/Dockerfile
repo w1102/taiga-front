@@ -1,6 +1,6 @@
 FROM node:19.7.0 as build
 
-WORKDIR /app
+WORKDIR /taiga
 
 COPY . .
 RUN npm ci
@@ -11,7 +11,7 @@ RUN npx gulp deploy
 FROM nginx:1.23-alpine
 LABEL maintainer="support@taiga.io"
 
-COPY --from=build /app/dist /taiga
+COPY --from=build /taiga/dist /taiga
 
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/conf.json.template /
