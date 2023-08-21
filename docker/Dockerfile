@@ -1,13 +1,9 @@
 FROM node:19.7.0 as build
 
-COPY . /taiga-front
-WORKDIR /taiga-front
-
-
-COPY package.json package-lock.json ./
-RUN npm ci
+WORKDIR /app
 
 COPY . .
+RUN npm ci
 RUN npx gulp compile-themes
 RUN npx gulp deploy
 
@@ -15,7 +11,7 @@ RUN npx gulp deploy
 FROM nginx:1.23-alpine
 LABEL maintainer="support@taiga.io"
 
-COPY --from=build /taiga-front/dist /taiga
+COPY --from=build /app/dist /taiga
 
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/conf.json.template /
