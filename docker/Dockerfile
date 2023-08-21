@@ -34,7 +34,6 @@ RUN set -eux; \
     cd /; \
     # Remove unused dependencies
     apk del --no-cache .build-deps; \
-    rm source.zip; \
     # Ready for nginx
     mv /taiga/dist/* /usr/share/nginx/html; \
     rm -rf /taiga
