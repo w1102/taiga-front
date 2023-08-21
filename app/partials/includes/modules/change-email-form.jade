@@ -14,6 +14,7 @@ div.change-email-form(tg-change-email)
     form
         fieldset
             input(
+                disabled
                 type="hidden"
                 name="email_token"
                 ng-model="data.email_token"
@@ -22,6 +23,7 @@ div.change-email-form(tg-change-email)
             )
 
             a.btn-small.ng-submit-form(
+                disabled
                 variant="primary"
                 href=""
                 title="{{'CHANGE_EMAIL_FORM.ACTION_CHANGE_EMAIL' | translate}}"
