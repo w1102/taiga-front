@@ -11,7 +11,7 @@ FROM nginx:1.23-alpine
 LABEL maintainer="support@taiga.io"
 
 RUN mkdir -p /taiga/dist
-COPY --from=build /taiga/dist /taiga 
+COPY --from=build /taiga /taiga 
 
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/conf.json.template /
