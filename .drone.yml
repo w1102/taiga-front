@@ -21,7 +21,6 @@ steps:
     repo: registry.tranquang.net/quangtran/taiga-front
     tags:
     - latest
-    cache_from: registry.tranquang.net/quangtran/taiga-front:latest
 
 trigger:
   branch:
