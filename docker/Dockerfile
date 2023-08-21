@@ -4,7 +4,6 @@ WORKDIR /taiga
 
 COPY . .
 RUN npm ci
-RUN npx gulp compile-themes
 RUN npx gulp deploy
 
 
