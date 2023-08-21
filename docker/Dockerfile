@@ -11,28 +11,43 @@ COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY docker/conf.json.template /
 COPY docker/config_env_subst.sh /docker-entrypoint.d/30_config_env_subst.sh
 
-RUN set -eux; \
-    apk update; \
-    apk add --no-cache --virtual .build-deps \
-       subversion; \
-    apk add \
-       bash; \
+COPY . /taiga-front
+WORKDIR /taiga-front
+
+RUN apt update; \
+    apt install -y \
+        bash \
+        curl \
+        git \
+        subversion; \
+    # Install nvm
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash; \
+    export NVM_DIR="$HOME/.nvm"; \
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \
     # Install taiga-front core
-    wget https://github.com/kaleidos-ventures/taiga-front-dist/archive/6.7.0.zip -O source.zip; \
-    unzip source.zip; \
-    mv /taiga-front-dist-6.7.0 /taiga; \
-    mv /conf.json.template taiga/dist/; \
-    chmod +x /docker-entrypoint.d/30_config_env_subst.sh; \
+    nvm install; \
+    nvm use; \
+    npm ci; \
+    npx gulp compile-themes \
+    npx gulp deploy; \
+    mv /conf.json.template dist/conf.json.template; \
+    mv /taiga-front/dist/* /usr/share/nginx/html; \
     # Install taiga-front contribs
     mkdir /taiga/dist/plugins; \
     cd /taiga/dist/plugins; \
-    svn export "https://github.com/kaleidos-ventures/taiga-contrib-slack/tags/6.7.0/front/dist" "slack"; \
-    svn export "https://github.com/kaleidos-ventures/taiga-contrib-github-auth/tags/6.7.0/front/dist" "github-auth"; \
-    svn export "https://github.com/kaleidos-ventures/taiga-contrib-gitlab-auth/tags/6.7.0/front/dist" "gitlab-auth"; \
+    svn export "https://github.com/kaleidos-ventures/taiga-contrib-slack/tags/6.6.0/front/dist" "slack"; \
+    svn export "https://github.com/kaleidos-ventures/taiga-contrib-github-auth/tags/6.6.0/front/dist" "github-auth"; \
+    svn export "https://github.com/kaleidos-ventures/taiga-contrib-gitlab-auth/tags/6.6.0/front/dist" "gitlab-auth"; \
     cd /; \
-    # Remove unused dependencies
-    apk del --no-cache .build-deps; \
-    rm source.zip; \
-    # Ready for nginx
-    mv /taiga/dist/* /usr/share/nginx/html; \
-    rm -rf /taiga
+    # Prepare entrypoint
+    chmod +x /docker-entrypoint.d/30_config_env_subst.sh; \
+    # Remove garbage
+    apt purge -y \
+        bash \
+        curl \
+        git \
+        subversion; \
+    apt autoremove -y; \
+    rm -rf /var/lib/apt/lists/*; \
+    rm -rf /root/.cache; \
+    rm -rf /taiga-front
