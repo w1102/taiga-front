@@ -23,7 +23,6 @@ RUN set -eux; \
        subversion; \
     apk add \
        bash; \
-    
     mv /conf.json.template taiga/dist/; \
     chmod +x /docker-entrypoint.d/30_config_env_subst.sh; \
     # Install taiga-front contribs
